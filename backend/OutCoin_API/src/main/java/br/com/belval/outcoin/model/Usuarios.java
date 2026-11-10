@@ -1,5 +1,8 @@
 package br.com.belval.outcoin.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Usuarios {
 	public class Usuario {
 		 
@@ -16,4 +19,5 @@ public class Usuarios {
 	    // Construtor vazio
 	    public Usuario() {
 	    }
+}
 }

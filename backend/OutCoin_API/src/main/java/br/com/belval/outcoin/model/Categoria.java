@@ -1,4 +1,3 @@
-
 package br.com.belval.outcoin.model;
 
 import java.util.Objects;

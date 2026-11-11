@@ -15,7 +15,7 @@ public class OutcoinApplication {
 	
 	@GetMapping ("/")
 	public String eco () {
-		return "eco";
+		return "economia MIF2AN";
 	}
 	
 }

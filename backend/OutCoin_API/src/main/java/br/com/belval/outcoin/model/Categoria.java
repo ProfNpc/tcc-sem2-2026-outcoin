@@ -1,7 +1,5 @@
 package br.com.belval.outcoin.model;
-
 import java.util.Objects;
-
 public class Categoria {
 
     private Integer idCategoria;

@@ -1,183 +1,163 @@
-//Lista de despezas
 
-/*
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { listarProdutos, apagarProduto } from '../services/produtoService';
-import Modal from '../../components/Modal';
+import { useNavigate } from 'react-router-dom';
+import {
+  listarUsuarios,
+  desativarUsuario
+} from '../../services/usuariosService';
 
-function IconeLapis() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-    </svg>
-  );
-}
-
-
-
-*/
-
-export default function ListaProdutos() {
-
-  /*
+export default function ListaUsuarios() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [produtos, setProdutos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  // Produto selecionado para exclusão (abre o modal de confirmação)
-  const [produtoParaApagar, setProdutoParaApagar] = useState(null);
-  // Mensagem de sucesso exibida em modal
-  const [mensagemSucesso, setMensagemSucesso] = useState('');
-
-  async function carregarProdutos() {
-    setCarregando(true);
-    setErro('');
+  async function carregarUsuarios() {
     try {
-      const lista = await listarProdutos();
-      setProdutos(lista);
-    } catch (e) {
-      setErro('Não foi possível carregar os produtos. ' + e.message);
+      setCarregando(true);
+      setErro('');
+
+      const resposta = await listarUsuarios();
+
+      // Aceita uma lista direta ou uma resposta paginada.
+      const lista = Array.isArray(resposta)
+        ? resposta
+        : Array.isArray(resposta?.content)
+          ? resposta.content
+          : [];
+
+      setUsuarios(lista);
+    } catch (error) {
+      setErro(error.message || 'Não foi possível carregar os usuários.');
     } finally {
       setCarregando(false);
     }
   }
 
-  // Sempre que a página é carregada, busca a lista na API.
-  // Se viemos de "Novo" ou "Editar" com uma mensagem, exibe o modal de sucesso.
   useEffect(() => {
-    carregarProdutos();
-    if (location.state && location.state.mensagem) {
-      setMensagemSucesso(location.state.mensagem);
-      // Limpa o state para o modal não reaparecer ao atualizar a página (F5)
-      navigate(location.pathname, { replace: true, state: null });
-    }
-  }, [location.key]);
+    carregarUsuarios();
+  }, []);
 
-  function abrirConfirmacaoApagar(produto) {
-    setProdutoParaApagar(produto);
-  }
+  async function handleDesativar(id) {
+    const confirmar = window.confirm(
+      'Tem certeza que deseja desativar este usuário?'
+    );
 
-  function cancelarApagar() {
-    setProdutoParaApagar(null);
-    carregarProdutos();
-  }
+    if (!confirmar) return;
 
-  async function confirmarApagar() {
-    const produto = produtoParaApagar;
-    setProdutoParaApagar(null);
     try {
-      await apagarProduto(produto.id);
-      await carregarProdutos();
-      setMensagemSucesso('Produto apagado com sucesso');
-    } catch (e) {
-      setErro('Não foi possível apagar o produto. ' + e.message);
+      await desativarUsuario(id);
+      await carregarUsuarios();
+    } catch (error) {
+      setErro(error.message || 'Não foi possível desativar o usuário.');
     }
-  }
-
-  function formatarPreco(preco) {
-    if (preco === null || preco === undefined) {
-      return '';
-    }
-    return Number(preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  function formatarData(data) {
-    if (!data) {
-      return '';
-    }
-    const d = new Date(data);
-    if (isNaN(d.getTime())) {
-      return data;
-    }
-    return d.toLocaleString('pt-BR');
   }
 
   return (
-    <div>
-      <h1>Lista Produtos</h1>
+    <section>
+      <div className="barra-rodape">
+        <h1>Usuários</h1>
 
-      <div className="barra-topo">
-        <button className="botao botao-primario" onClick={() => navigate('/produtos/novo')}>
-          + Novo
+        <button
+          type="button"
+          className="botao botao-primario"
+          onClick={() => navigate('/usuarios/novo')}
+        >
+          + Novo usuário
         </button>
       </div>
 
-      {erro && <div className="erro">{erro}</div>}
+      {carregando && (
+        <p>Carregando usuários...</p>
+      )}
 
-      {carregando ? (
-        <p>Carregando...</p>
-      ) : (
-        <table className="tabela-zebrada">
-          <thead>
-            <tr>
-              <th>id</th>
-              <th>nome</th>
-              <th>descrição</th>
-              <th>preco</th>
-              <th>dataCriacao</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {produtos.length === 0 ? (
+      {!carregando && erro && (
+        <div>
+          <p className="erro">{erro}</p>
+
+          <button
+            type="button"
+            className="botao botao-secundario"
+            onClick={carregarUsuarios}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
+      {!carregando && !erro && usuarios.length === 0 && (
+        <p>Nenhum usuário cadastrado.</p>
+      )}
+
+      {!carregando && !erro && usuarios.length > 0 && (
+        <div className="tabela-container">
+          <table>
+            <thead>
               <tr>
-                <td colSpan="7" className="vazio">Nenhum produto cadastrado.</td>
+                <th>Nome</th>
+                <th>Sobrenome</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Ações</th>
               </tr>
-            ) : (
-              produtos.map((produto) => (
-                <tr key={produto.id}>
-                  <td>{produto.id}</td>
-                  <td>{produto.nome}</td>
-                  <td>{produto.descricao}</td>
-                  <td className="numero">{formatarPreco(produto.preco)}</td>
-                  <td>{formatarData(produto.dataCriacao)}</td>
-                  <td className="celula-acao">
-                    <button
-                      className="botao-icone botao-apagar"
-                      data-tooltip="Apagar produto"
-                      aria-label="Apagar produto"
-                      onClick={() => abrirConfirmacaoApagar(produto)}
-                    >
-                      X
-                    </button>
-                  </td>
-                  <td className="celula-acao">
-                    <button
-                      className="botao-icone botao-editar"
-                      data-tooltip="Editar produto"
-                      aria-label="Editar produto"
-                      onClick={() => navigate('/produtos/editar/' + produto.id)}
-                    >
-                      <IconeLapis />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
+            </thead>
 
-      {produtoParaApagar && (
-        <Modal mensagem={'Deseja realmente apagar o produto ' + produtoParaApagar.id + ' - ' + produtoParaApagar.nome + '?'}>
-          <button className="botao botao-secundario" onClick={cancelarApagar}>Cancelar</button>
-          <button className="botao botao-perigo" onClick={confirmarApagar}>Apagar</button>
-        </Modal>
-      )}
+            <tbody>
+              {usuarios.map((usuario) => {
+                const id = usuario.idUsuario ?? usuario.id;
 
-      {mensagemSucesso && (
-        <Modal mensagem={mensagemSucesso}>
-          <button className="botao botao-primario" onClick={() => setMensagemSucesso('')}>OK</button>
-        </Modal>
+                return (
+                  <tr key={id}>
+                    <td>{usuario.nome}</td>
+
+                    <td>{usuario.sobrenome}</td>
+
+                    <td>{usuario.email}</td>
+
+                    <td>{usuario.telefone || '-'}</td>
+
+                    <td>
+                      <span
+                        className={
+                          usuario.ativo
+                            ? 'status-ativo'
+                            : 'status-inativo'
+                        }
+                      >
+                        {usuario.ativo ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className="botao botao-primario"
+                        onClick={() =>
+                          navigate(`/usuarios/editar/${id}`)
+                        }
+                      >
+                        Editar
+                      </button>
+
+                      {usuario.ativo && (
+                        <button
+                          type="button"
+                          className="botao botao-perigo"
+                          onClick={() => handleDesativar(id)}
+                        >
+                          Desativar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-    </div>
+    </section>
   );
-  */
 }

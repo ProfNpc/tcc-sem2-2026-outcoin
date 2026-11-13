@@ -1,67 +1,189 @@
-//Registrar Despeza
-/*
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { criarProduto } from '../services/produtoService';
-*/
-export default function NovoProduto() {
+import { criarUsuario } from '../../services/usuariosService';
 
-/*  
+export default function NovoUsuario() {
   const navigate = useNavigate();
 
+  // Dados do usuário
   const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [preco, setPreco] = useState('');
+  const [sobrenome, setSobrenome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [dataNascimento, setDataNascimento] = useState('');
+
+  // Controle da tela
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState('');
 
   async function salvar(evento) {
     evento.preventDefault();
-    setSalvando(true);
     setErro('');
 
-    const produto = {
-      nome: nome,
-      descricao: descricao,
-      preco: preco === '' ? null : Number(preco)
+    // Validação dos campos de texto
+    if (!nome.trim() || !sobrenome.trim() || !email.trim()) {
+      setErro('Preencha corretamente o nome, sobrenome e e-mail.');
+      return;
+    }
+
+    // Validação das senhas
+    if (senha !== confirmarSenha) {
+      setErro('As senhas não coincidem.');
+      return;
+    }
+
+    setSalvando(true);
+
+    const usuario = {
+      nome: nome.trim(),
+      sobrenome: sobrenome.trim(),
+      email: email.trim(),
+      senha: senha,
+      telefone: telefone.trim(),
+      dataNascimento: dataNascimento
     };
 
     try {
-      await criarProduto(produto);
-      navigate('/produtos', { state: { mensagem: 'Produto criado com sucesso' } });
+      await criarUsuario(usuario);
+
+      navigate('/usuarios', {
+        state: {
+          mensagem: 'Usuário cadastrado com sucesso!'
+        }
+      });
+
     } catch (e) {
-      setErro('Não foi possível criar o produto. ' + e.message);
+      setErro(
+        e.message || 'Não foi possível cadastrar o usuário.'
+      );
+    } finally {
       setSalvando(false);
     }
   }
 
   return (
-    <div>
-      <h1>Novo Produto</h1>
+    <section>
+      <h1>Novo usuário</h1>
 
-      {erro && <div className="erro">{erro}</div>}
+      <p>
+        Preencha os campos abaixo para cadastrar um novo usuário
+        no OutCoin.
+      </p>
+
+      {erro && (
+        <div className="erro">
+          {erro}
+        </div>
+      )}
 
       <form className="formulario" onSubmit={salvar}>
-        <label htmlFor="nome">nome</label>
-        <input id="nome" type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
 
-        <label htmlFor="descricao">descrição</label>
-        <textarea id="descricao" rows="3" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+        <label htmlFor="nome">Nome</label>
+        <input
+          id="nome"
+          name="nome"
+          type="text"
+          placeholder="Digite o nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          autoComplete="given-name"
+          required
+        />
 
-        <label htmlFor="preco">preco</label>
-        <input id="preco" type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} />
+        <label htmlFor="sobrenome">Sobrenome</label>
+        <input
+          id="sobrenome"
+          name="sobrenome"
+          type="text"
+          placeholder="Digite o sobrenome"
+          value={sobrenome}
+          onChange={(e) => setSobrenome(e.target.value)}
+          autoComplete="family-name"
+          required
+        />
+
+        <label htmlFor="email">E-mail</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="exemplo@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          required
+        />
+
+        <label htmlFor="senha">Senha</label>
+        <input
+          id="senha"
+          name="senha"
+          type="password"
+          placeholder="Digite uma senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          autoComplete="new-password"
+          required
+        />
+
+        <label htmlFor="confirmarSenha">Confirmar senha</label>
+        <input
+          id="confirmarSenha"
+          name="confirmarSenha"
+          type="password"
+          placeholder="Digite a senha novamente"
+          value={confirmarSenha}
+          onChange={(e) => setConfirmarSenha(e.target.value)}
+          autoComplete="new-password"
+          required
+        />
+
+        <label htmlFor="telefone">Telefone</label>
+        <input
+          id="telefone"
+          name="telefone"
+          type="tel"
+          placeholder="Digite o telefone"
+          value={telefone}
+          onChange={(e) => setTelefone(e.target.value)}
+          autoComplete="tel"
+          required
+        />
+
+        <label htmlFor="dataNascimento">Data de nascimento</label>
+        <input
+          id="dataNascimento"
+          name="dataNascimento"
+          type="date"
+          value={dataNascimento}
+          onChange={(e) => setDataNascimento(e.target.value)}
+          autoComplete="bday"
+          required
+        />
 
         <div className="barra-rodape">
-          <button type="button" className="botao botao-secundario" onClick={() => navigate('/produtos')}>
-            Voltar
+          <button
+            type="button"
+            className="botao botao-secundario"
+            onClick={() => navigate('/usuarios')}
+            disabled={salvando}
+          >
+            Cancelar
           </button>
-          <button type="submit" className="botao botao-primario" disabled={salvando}>
-            {salvando ? 'Salvando...' : 'Salvar'}
+
+          <button
+            type="submit"
+            className="botao botao-primario"
+            disabled={salvando}
+          >
+            {salvando ? 'Salvando...' : 'Cadastrar usuário'}
           </button>
         </div>
-      </form>
-    </div>
-  );
 
-  */
+      </form>
+    </section>
+  );
 }

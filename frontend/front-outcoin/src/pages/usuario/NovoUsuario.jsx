@@ -1,10 +1,12 @@
 //Registrar Despeza
-
+/*
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { criarProduto } from '../services/produtoService';
-
+*/
 export default function NovoProduto() {
+
+/*  
   const navigate = useNavigate();
 
   const [nome, setNome] = useState('');
@@ -60,4 +62,6 @@ export default function NovoProduto() {
       </form>
     </div>
   );
+
+  */
 }

@@ -1,9 +1,10 @@
 //Lista de despezas
 
+/*
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { listarProdutos, apagarProduto } from '../services/produtoService';
-import Modal from '../components/Modal';
+import Modal from '../../components/Modal';
 
 function IconeLapis() {
   return (
@@ -15,7 +16,13 @@ function IconeLapis() {
   );
 }
 
+
+
+*/
+
 export default function ListaProdutos() {
+
+  /*
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -172,4 +179,5 @@ export default function ListaProdutos() {
       )}
     </div>
   );
+  */
 }

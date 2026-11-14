@@ -20,7 +20,7 @@ import br.com.belval.outcoin.model.Usuario;
 import br.com.belval.outcoin.repository.UsuarioRepository;
 
 @RestController
-@RequestMapping("/Usuario")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     @Autowired
@@ -68,7 +68,7 @@ public class UsuarioController {
 
         if (optional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Usuario não encontrado!");
+                    .body(optional.get());
         }
 
         Usuario usuarioAtual = optional.get();
@@ -81,7 +81,7 @@ public class UsuarioController {
         usuarioRepository.save(usuarioAtual);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body("Usuario atualizado com sucesso!");
+                .body(usuarioNovo);
     }
 
     @DeleteMapping("/fisico/{id}")
@@ -108,7 +108,7 @@ public class UsuarioController {
 
         if (optional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Usuario não encontrado!");
+                    .body(optional.get());
         }
 
         Usuario usuario = optional.get();
@@ -117,7 +117,7 @@ public class UsuarioController {
         usuarioRepository.save(usuario);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body("Usuario apagado com sucesso!");
+                .body(optional.get());
     }
 
 }

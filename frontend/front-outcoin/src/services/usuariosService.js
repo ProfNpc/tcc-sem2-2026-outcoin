@@ -53,7 +53,7 @@ export async function atualizarUsuario(id, dados) {
  
 // DELETE - Desativar usuário
 export async function desativarUsuario(id) {
-  return requisicao(`/usuarios/${id}/desativar`, {
-    method: 'PATCH',
+  return requisicao(`/usuarios/${id}`, {
+    method: 'DELETE',
   });
 }

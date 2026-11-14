@@ -12,8 +12,8 @@ export default function Menu() {
 
   return (
     <nav className="menu">
-      <NavLink to="/produtos" className={classeLink}>
-        Produtos
+      <NavLink to="/despesas" className={classeLink}>
+        Despesas
       </NavLink>
 
       <NavLink to="/usuarios" className={classeLink}>
